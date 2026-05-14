@@ -2,6 +2,7 @@
 
 public class PrescriptionItem
 {
+    public int Id { get; set; }
     public int PrescriptionId { get; set; }
     public Prescription Prescription { get; set; }
     public string MedicationName { get; set; }
