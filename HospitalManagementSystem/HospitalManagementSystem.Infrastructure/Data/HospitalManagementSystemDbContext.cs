@@ -29,7 +29,6 @@ public class HospitalManagementSystemDbContext : IdentityDbContext<ApplicationUs
     {
         base.OnModelCreating(modelBuilder);
 
-
         foreach (var relationship in modelBuilder.Model.GetEntityTypes()
               .SelectMany(e => e.GetForeignKeys()))
         {
@@ -266,5 +265,4 @@ public class HospitalManagementSystemDbContext : IdentityDbContext<ApplicationUs
          .Property(e => e.Reason)
          .IsRequired();
     }
-
 }
