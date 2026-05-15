@@ -3,6 +3,7 @@
 public class Doctor
 {
     public int Id { get; set; }
+    public string UserId { get; set; } = string.Empty; 
     public DoctorProfile Profile { get; set; }  
     public int? SupervisorId { get; set; }
     public Doctor? Supervisor { get; set; }

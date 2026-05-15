@@ -11,6 +11,5 @@ public class Appointment
     public Doctor Doctor { get; set; }
     public int PatientId { get; set; }
     public Patient Patient { get; set; }
-    public int? MedicalRecordId { get; set; }
     public MedicalRecord? MedicalRecord { get; set; }
 }
