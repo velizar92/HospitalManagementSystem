@@ -1,9 +1,10 @@
 ﻿using HospitalManagementSystem.Domain.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HospitalManagementSystem.Infrastructure.Data;
 
-public class HospitalManagementSystemDbContext : DbContext
+public class HospitalManagementSystemDbContext : IdentityDbContext<ApplicationUser>
 {
     public HospitalManagementSystemDbContext(DbContextOptions<HospitalManagementSystemDbContext> options)
         : base(options)
@@ -28,6 +29,13 @@ public class HospitalManagementSystemDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+
+        foreach (var relationship in modelBuilder.Model.GetEntityTypes()
+              .SelectMany(e => e.GetForeignKeys()))
+        {
+            relationship.DeleteBehavior = DeleteBehavior.NoAction;
+        }
+
         ConfigurePatientProfile(modelBuilder);
         ConfigureDoctorProfile(modelBuilder);
         ConfigureAppointment(modelBuilder);
@@ -37,7 +45,9 @@ public class HospitalManagementSystemDbContext : DbContext
         ConfigureInvoiceItem(modelBuilder);
         ConfigurePrescription(modelBuilder);
         ConfigurePrescriptionItem(modelBuilder);
+        ConfigureAdmission(modelBuilder);
     }
+
 
     private void ConfigurePatientProfile(ModelBuilder modelBuilder)
     {
@@ -241,4 +251,20 @@ public class HospitalManagementSystemDbContext : DbContext
            .Property(e => e.Instructions)
            .IsRequired();
     }
+
+    private void ConfigureAdmission(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Admission>()
+          .Property(e => e.PatientId)
+          .IsRequired();
+
+        modelBuilder.Entity<Admission>()
+         .Property(e => e.RoomId)
+         .IsRequired();
+
+        modelBuilder.Entity<Admission>()
+         .Property(e => e.Reason)
+         .IsRequired();
+    }
+
 }
