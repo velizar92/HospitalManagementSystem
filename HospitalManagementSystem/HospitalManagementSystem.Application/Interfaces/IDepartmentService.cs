@@ -4,9 +4,9 @@ namespace HospitalManagementSystem.Application.Interfaces;
 
 public interface IDepartmentService
 {
-    Department GetDepartment(int departmentId);
-    IEnumerable<Department> GetDepartments();
-    int AddDepartment(Department department);
-    void DeleteDepartment(Department department);
-    void UpdateDepartment(Department department);
+    Task<Department?> GetDepartmentAsync(int departmentId);
+    Task<IEnumerable<Department>> GetDepartmentsAsync();
+    Task<int> AddDepartmentAsync(Department department);
+    Task DeleteDepartmentAsync(Department department);
+    Task UpdateDepartmentAsync(Department department);
 }
