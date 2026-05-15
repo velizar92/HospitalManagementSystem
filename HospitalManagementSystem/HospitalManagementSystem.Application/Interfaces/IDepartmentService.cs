@@ -1,12 +1,12 @@
-﻿using HospitalManagementSystem.Domain.Models;
+﻿using HospitalManagementSystem.Application.DTOs.Department;
 
 namespace HospitalManagementSystem.Application.Interfaces;
 
 public interface IDepartmentService
 {
-    Task<Department?> GetDepartmentAsync(int departmentId);
-    Task<IEnumerable<Department>> GetDepartmentsAsync();
-    Task<int> AddDepartmentAsync(Department department);
-    Task DeleteDepartmentAsync(Department department);
-    Task UpdateDepartmentAsync(Department department);
+    Task<DepartmentDto?> GetDepartmentAsync(int departmentId);
+    Task<IEnumerable<DepartmentDto>> GetDepartmentsAsync();
+    Task<int> AddDepartmentAsync(DepartmentCreateDto departmentCreateDto);
+    Task DeleteDepartmentAsync(int departmentId);
+    Task UpdateDepartmentAsync(DepartmentUpdateDto departmentUpdateDto);
 }
