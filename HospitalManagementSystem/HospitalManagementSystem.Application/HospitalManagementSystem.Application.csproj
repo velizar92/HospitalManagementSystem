@@ -10,8 +10,4 @@
     <ProjectReference Include="..\HospitalManagementSystem.Domain\HospitalManagementSystem.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Implementations\" />
-  </ItemGroup>
-
 </Project>
