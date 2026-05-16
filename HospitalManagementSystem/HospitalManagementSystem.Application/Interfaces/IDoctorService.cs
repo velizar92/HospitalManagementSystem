@@ -1,4 +1,5 @@
 ﻿using HospitalManagementSystem.Application.DTOs.Doctor;
+using HospitalManagementSystem.Domain.Enums;
 
 namespace HospitalManagementSystem.Application.Interfaces;
 
@@ -15,7 +16,5 @@ public interface IDoctorService
     Task DeleteDoctorAsync(int doctorId);
     Task<DoctorDto?> GetSupervisorAsync(int doctorId);
     Task<IEnumerable<DoctorDto>> GetSubordinatesAsync(int doctorId);
-    Task<IEnumerable<DoctorDto>> GetDoctorsWithScheduledAppointmentsAsync(int departmentId);
-    Task<IEnumerable<DoctorDto>> GetDoctorsWithCanceledAppointmentsAsync(int departmentId);
-    Task<IEnumerable<DoctorDto>> GetDoctorsWithCompletedAppointmentsAsync(int departmentId);
+    Task<IEnumerable<DoctorDto>> GetDoctorsByAppointmentStatus(AppointmentStatus status);
 }
