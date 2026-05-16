@@ -8,7 +8,6 @@ public interface IInvoiceService
     Task<IEnumerable<InvoiceDto>> GetInvoicesAsync();
     Task<IEnumerable<InvoiceDto>> GetInvoicesByPatientIdAsync(int patientId);
     Task<IEnumerable<InvoiceDto>> GetUnpaidInvoicesAsync();
-
     Task<int> CreateInvoiceAsync(CreateInvoiceDto createInvoiceDto);
     Task UpdateInvoiceAsync(UpdateInvoiceDto updateInvoiceDto);
     Task DeleteInvoiceAsync(int invoiceId);

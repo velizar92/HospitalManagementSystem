@@ -8,10 +8,7 @@ public class AddmissionDto
     public DateTime AdmissionDate { get; set; }
     public DateTime? DischargeDate { get; set; }
     public string Reason { get; set; } = string.Empty;
-
-    // Optional convenience/display fields populated by mapper/service
     public string? PatientFullName { get; set; }
     public string? RoomNumber { get; set; }
-
     public bool IsActive => DischargeDate == null;
 }
