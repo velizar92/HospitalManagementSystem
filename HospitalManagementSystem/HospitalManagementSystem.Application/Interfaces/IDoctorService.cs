@@ -17,4 +17,6 @@ public interface IDoctorService
     Task<DoctorDto?> GetSupervisorAsync(int doctorId);
     Task<IEnumerable<DoctorDto>> GetSubordinatesAsync(int doctorId);
     Task<IEnumerable<DoctorDto>> GetDoctorsByAppointmentStatus(AppointmentStatus status);
+    Task<DoctorProfileDto?> GetDoctorProfileAsync(int doctorId);
+    Task UpdateDoctorProfileAsync(int doctorId, DoctorProfileDto profileDto);
 }
