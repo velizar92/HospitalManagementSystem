@@ -1,78 +1,301 @@
 ﻿using HospitalManagementSystem.Application.DTOs.Doctor;
 using HospitalManagementSystem.Application.Interfaces;
 using HospitalManagementSystem.Domain.Enums;
+using HospitalManagementSystem.Domain.Models;
+using HospitalManagementSystem.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace HospitalManagementSystem.Application.Implementations;
 
 public class DoctorService : IDoctorService
 {
-    public Task<int> AddDoctorAsync(DoctorForCreateDto doctorForCreate)
+    private readonly HospitalManagementSystemDbContext _dbContext;
+
+    public DoctorService(HospitalManagementSystemDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public Task DeleteDoctorAsync(int doctorId)
+    public async Task<int> CreateDoctorAsync(DoctorForCreateDto doctorForCreate)
     {
-        throw new NotImplementedException();
+        var doctor = new Doctor
+        {
+            UserId = doctorForCreate.UserId,
+            DepartmentId = doctorForCreate.DepartmentId,
+            SupervisorId = doctorForCreate.SupervisorId,
+            Profile = new DoctorProfile
+            {
+                FirstName = doctorForCreate.Profile.FirstName,
+                LastName = doctorForCreate.Profile.LastName,
+                PhoneNumber = doctorForCreate.Profile.PhoneNumber,
+                Specialty = doctorForCreate.Profile.Specialty,
+                Qualification = doctorForCreate.Profile.Qualification,
+                LicenseNumber = doctorForCreate.Profile.LicenseNumber,
+                YearsOfExperience = doctorForCreate.Profile.YearsOfExperience,
+                ConsultationFee = doctorForCreate.Profile.ConsultationFee,
+            }
+        };
+
+        _dbContext.Doctors.Add(doctor);
+        await _dbContext.SaveChangesAsync();
+
+        return doctor.Id;
     }
 
-    public Task<DoctorDto?> GetDoctorAsync(int doctorId)
+    public async Task DeleteDoctorAsync(int doctorId)
     {
-        throw new NotImplementedException();
+        var doctor = await _dbContext.Doctors.FindAsync(doctorId);
+
+        if (doctor != null)
+        {
+            _dbContext.Doctors.Remove(doctor);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 
-    public Task<DoctorDto?> GetDoctorByUserIdAsync(string userId)
+    public async Task<DoctorDto?> GetDoctorAsync(int doctorId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Doctors
+            .Where(d => d.Id == doctorId)
+            .Select(d => new DoctorDto
+            {
+                Id = d.Id,
+                UserId = d.UserId,
+                SupervisorId = d.SupervisorId,
+                DepartmentId = d.DepartmentId,
+                Profile = new DoctorProfileDto
+                {
+                    FirstName = d.Profile.FirstName,
+                    LastName = d.Profile.LastName,
+                    PhoneNumber = d.Profile.PhoneNumber,
+                    Specialty = d.Profile.Specialty,
+                    Qualification = d.Profile.Qualification,
+                    LicenseNumber = d.Profile.LicenseNumber,
+                    YearsOfExperience = d.Profile.YearsOfExperience,
+                    ConsultationFee = d.Profile.ConsultationFee,
+                },
+                SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
+                DepartmentName = d.Department.Name,
+            })
+            .FirstOrDefaultAsync();
     }
 
-    public Task<DoctorProfileDto?> GetDoctorProfileAsync(int doctorId)
+    public async Task<DoctorDto?> GetDoctorByUserIdAsync(string userId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Doctors
+            .Where(d => d.UserId == userId)
+            .Select(d => new DoctorDto
+            {
+                Id = d.Id,
+                UserId = d.UserId,
+                SupervisorId = d.SupervisorId,
+                DepartmentId = d.DepartmentId,
+                Profile = new DoctorProfileDto
+                {
+                    FirstName = d.Profile.FirstName,
+                    LastName = d.Profile.LastName,
+                    PhoneNumber = d.Profile.PhoneNumber,
+                    Specialty = d.Profile.Specialty,
+                    Qualification = d.Profile.Qualification,
+                    LicenseNumber = d.Profile.LicenseNumber,
+                    YearsOfExperience = d.Profile.YearsOfExperience,
+                    ConsultationFee = d.Profile.ConsultationFee,
+                },
+                SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
+                DepartmentName = d.Department.Name,
+            })
+            .FirstOrDefaultAsync();
     }
 
-    public Task<IEnumerable<DoctorDto>> GetDoctorsAsync()
+    public async Task<DoctorProfileDto?> GetDoctorProfileAsync(int doctorId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Doctors
+            .Where(d => d.Id == doctorId)
+            .Select(d => new DoctorProfileDto
+            {
+                FirstName = d.Profile.FirstName,
+                LastName = d.Profile.LastName,
+                PhoneNumber = d.Profile.PhoneNumber,
+                Specialty = d.Profile.Specialty,
+                Qualification = d.Profile.Qualification,
+                LicenseNumber = d.Profile.LicenseNumber,
+                YearsOfExperience = d.Profile.YearsOfExperience,
+                ConsultationFee = d.Profile.ConsultationFee,
+            })
+            .FirstOrDefaultAsync();
     }
 
-    public Task<IEnumerable<DoctorDto>> GetDoctorsByAppointmentStatus(AppointmentStatus status)
+    public async Task<IEnumerable<DoctorDto>> GetDoctorsAsync()
     {
-        throw new NotImplementedException();
+       return await _dbContext.Doctors
+            .Select(d => new DoctorDto
+            {
+                Id = d.Id,
+                UserId = d.UserId,
+                SupervisorId = d.SupervisorId,
+                DepartmentId = d.DepartmentId,
+                Profile = new DoctorProfileDto
+                {
+                    FirstName = d.Profile.FirstName,
+                    LastName = d.Profile.LastName,
+                    PhoneNumber = d.Profile.PhoneNumber,
+                    Specialty = d.Profile.Specialty,
+                    Qualification = d.Profile.Qualification,
+                    LicenseNumber = d.Profile.LicenseNumber,
+                    YearsOfExperience = d.Profile.YearsOfExperience,
+                    ConsultationFee = d.Profile.ConsultationFee,
+                },
+                SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
+                DepartmentName = d.Department.Name,
+            })
+            .ToListAsync();
     }
 
-    public Task<IEnumerable<DoctorDto>> GetDoctorsByDepartmentAsync(int departmentId)
+    public async Task<IEnumerable<DoctorDto>> GetDoctorsByAppointmentStatus(AppointmentStatus status)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Appointments
+            .Where(a => a.Status == status)
+            .Select(a => a.Doctor)
+            .Select(d => new DoctorDto
+            {
+                Id = d.Id,
+                UserId = d.UserId,
+                SupervisorId = d.SupervisorId,
+                DepartmentId = d.DepartmentId,
+                Profile = new DoctorProfileDto
+                {
+                    FirstName = d.Profile.FirstName,
+                    LastName = d.Profile.LastName,
+                    PhoneNumber = d.Profile.PhoneNumber,
+                    Specialty = d.Profile.Specialty,
+                    Qualification = d.Profile.Qualification,
+                    LicenseNumber = d.Profile.LicenseNumber,
+                    YearsOfExperience = d.Profile.YearsOfExperience,
+                    ConsultationFee = d.Profile.ConsultationFee,
+                },
+                SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
+                DepartmentName = d.Department.Name,
+            })
+            .ToListAsync();
     }
 
-    public Task<int> GetDoctorsCountAsync()
+    public async Task<IEnumerable<DoctorDto>> GetDoctorsByDepartmentAsync(int departmentId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Doctors
+            .Where(d => d.DepartmentId == departmentId)
+            .Select(d => new DoctorDto
+            {
+                Id = d.Id,
+                UserId = d.UserId,
+                SupervisorId = d.SupervisorId,
+                DepartmentId = d.DepartmentId,
+                Profile = new DoctorProfileDto
+                {
+                    FirstName = d.Profile.FirstName,
+                    LastName = d.Profile.LastName,
+                    PhoneNumber = d.Profile.PhoneNumber,
+                    Specialty = d.Profile.Specialty,
+                    Qualification = d.Profile.Qualification,
+                    LicenseNumber = d.Profile.LicenseNumber,
+                    YearsOfExperience = d.Profile.YearsOfExperience,
+                    ConsultationFee = d.Profile.ConsultationFee,
+                },
+                SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
+                DepartmentName = d.Department.Name,
+            })
+            .ToListAsync();
     }
 
-    public Task<int> GetDoctorsCountInDepartmentAsync(int departmentId)
+    public async Task<int> GetDoctorsCountAsync()
     {
-        throw new NotImplementedException();
+        return await _dbContext.Doctors.CountAsync();
     }
 
-    public Task<IEnumerable<DoctorDto>> GetSubordinatesAsync(int doctorId)
+    public async Task<int> GetDoctorsCountInDepartmentAsync(int departmentId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Doctors.CountAsync(d => d.DepartmentId == departmentId);
     }
 
-    public Task<DoctorDto?> GetSupervisorAsync(int doctorId)
+    public async Task<IEnumerable<DoctorDto>> GetSubordinatesAsync(int doctorId)
     {
-        throw new NotImplementedException();
+       return await _dbContext.Doctors
+            .Where(d => d.SupervisorId == doctorId)
+            .Select(d => new DoctorDto
+            {
+                Id = d.Id,
+                UserId = d.UserId,
+                SupervisorId = d.SupervisorId,
+                DepartmentId = d.DepartmentId,
+                Profile = new DoctorProfileDto
+                {
+                    FirstName = d.Profile.FirstName,
+                    LastName = d.Profile.LastName,
+                    PhoneNumber = d.Profile.PhoneNumber,
+                    Specialty = d.Profile.Specialty,
+                    Qualification = d.Profile.Qualification,
+                    LicenseNumber = d.Profile.LicenseNumber,
+                    YearsOfExperience = d.Profile.YearsOfExperience,
+                    ConsultationFee = d.Profile.ConsultationFee,
+                },
+                SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
+                DepartmentName = d.Department.Name,
+            })
+            .ToListAsync();
     }
 
-    public Task UpdateDoctorAsync(DoctorForUpdateDto doctorForUpdate)
+    public async Task<DoctorDto?> GetSupervisorAsync(int doctorId)
     {
-        throw new NotImplementedException();
+        var doctor = await _dbContext.Doctors
+            .Include(d => d.Supervisor)
+            .FirstOrDefaultAsync(d => d.Id == doctorId);
+
+        if (doctor?.Supervisor == null)
+        {
+            return null;
+        }
+            
+        var supervisor = doctor.Supervisor;
+
+        return new DoctorDto
+        {
+            Id = supervisor.Id,
+            UserId = supervisor.UserId,
+            SupervisorId = supervisor.SupervisorId,
+            DepartmentId = supervisor.DepartmentId,
+            Profile = new DoctorProfileDto
+            {
+                FirstName = supervisor.Profile.FirstName,
+                LastName = supervisor.Profile.LastName,
+                PhoneNumber = supervisor.Profile.PhoneNumber,
+                Specialty = supervisor.Profile.Specialty,
+                Qualification = supervisor.Profile.Qualification,
+                LicenseNumber = supervisor.Profile.LicenseNumber,
+                YearsOfExperience = supervisor.Profile.YearsOfExperience,
+                ConsultationFee = supervisor.Profile.ConsultationFee,
+            },
+            SupervisorFullName = supervisor.Supervisor != null ? $"{supervisor.Supervisor.Profile.FirstName} {supervisor.Supervisor.Profile.LastName}" : null,
+            DepartmentName = supervisor.Department.Name,
+        };
     }
 
-    public Task UpdateDoctorProfileAsync(int doctorId, DoctorProfileDto profileDto)
+    public async Task UpdateDoctorProfileAsync(int doctorId, DoctorForUpdateDto doctorForUpdate)
     {
-        throw new NotImplementedException();
+        var doctor = await _dbContext.Doctors.FindAsync(doctorForUpdate.Id);
+
+        if (doctor == null)
+        {
+            throw new KeyNotFoundException("Doctor not found");
+        }
+
+        doctor.Id = doctorForUpdate.Id;
+        doctor.SupervisorId = doctorForUpdate.SupervisorId;
+        doctor.Profile.FirstName = doctorForUpdate.Profile.FirstName;
+        doctor.Profile.LastName = doctorForUpdate.Profile.LastName;
+        doctor.Profile.PhoneNumber = doctorForUpdate.Profile.PhoneNumber;
+        doctor.Profile.Specialty = doctorForUpdate.Profile.Specialty;
+        doctor.Profile.Qualification = doctorForUpdate.Profile.Qualification;
+        doctor.Profile.LicenseNumber = doctorForUpdate.Profile.LicenseNumber;
+        doctor.Profile.YearsOfExperience = doctorForUpdate.Profile.YearsOfExperience;
+        doctor.Profile.ConsultationFee = doctorForUpdate.Profile.ConsultationFee;
     }
 }

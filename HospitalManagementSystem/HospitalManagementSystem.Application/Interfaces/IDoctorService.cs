@@ -11,12 +11,11 @@ public interface IDoctorService
     Task<IEnumerable<DoctorDto>> GetDoctorsAsync();
     Task<IEnumerable<DoctorDto>> GetDoctorsByDepartmentAsync(int departmentId);
     Task<int> GetDoctorsCountInDepartmentAsync(int departmentId);
-    Task<int> AddDoctorAsync(DoctorForCreateDto doctorForCreate);
-    Task UpdateDoctorAsync(DoctorForUpdateDto doctorForUpdate);
+    Task<int> CreateDoctorAsync(DoctorForCreateDto doctorForCreate);
     Task DeleteDoctorAsync(int doctorId);
     Task<DoctorDto?> GetSupervisorAsync(int doctorId);
     Task<IEnumerable<DoctorDto>> GetSubordinatesAsync(int doctorId);
     Task<IEnumerable<DoctorDto>> GetDoctorsByAppointmentStatus(AppointmentStatus status);
     Task<DoctorProfileDto?> GetDoctorProfileAsync(int doctorId);
-    Task UpdateDoctorProfileAsync(int doctorId, DoctorProfileDto profileDto);
+    Task UpdateDoctorProfileAsync(int doctorId, DoctorForUpdateDto profileDto);
 }
