@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HospitalManagementSystem.Domain\HospitalManagementSystem.Domain.csproj" />
+    <ProjectReference Include="..\HospitalManagementSystem.Infrastructure\HospitalManagementSystem.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
