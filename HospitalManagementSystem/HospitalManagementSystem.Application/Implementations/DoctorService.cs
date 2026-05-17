@@ -46,11 +46,13 @@ public class DoctorService : IDoctorService
     {
         var doctor = await _dbContext.Doctors.FindAsync(doctorId);
 
-        if (doctor != null)
+        if (doctor == null)
         {
-            _dbContext.Doctors.Remove(doctor);
-            await _dbContext.SaveChangesAsync();
+            throw new KeyNotFoundException("Doctor not found");
         }
+
+        _dbContext.Doctors.Remove(doctor);
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<DoctorDto?> GetDoctorAsync(int doctorId)
