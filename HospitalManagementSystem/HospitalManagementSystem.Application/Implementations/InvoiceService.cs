@@ -29,7 +29,7 @@ public class InvoiceService : IInvoiceService
             }).ToList()
         };
 
-        await _dbContext.AddAsync(invoice);
+        _dbContext.Add(invoice);
         await _dbContext.SaveChangesAsync();
 
         return invoice.Id;
