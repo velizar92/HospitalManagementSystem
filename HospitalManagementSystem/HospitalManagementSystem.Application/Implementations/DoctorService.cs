@@ -299,5 +299,7 @@ public class DoctorService : IDoctorService
         doctor.Profile.LicenseNumber = doctorForUpdate.Profile.LicenseNumber;
         doctor.Profile.YearsOfExperience = doctorForUpdate.Profile.YearsOfExperience;
         doctor.Profile.ConsultationFee = doctorForUpdate.Profile.ConsultationFee;
+
+        await _dbContext.SaveChangesAsync();
     }
 }
