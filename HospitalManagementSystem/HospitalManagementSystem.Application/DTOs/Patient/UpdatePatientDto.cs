@@ -11,5 +11,5 @@ public class UpdatePatientDto
 
     public PatientProfileDto? Profile { get; set; }
 
-    public bool? IsActive { get; set; }
+    public bool IsActive { get; set; }
 }
