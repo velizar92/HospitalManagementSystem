@@ -18,23 +18,14 @@ public class DoctorService : IDoctorService
 
     public async Task<int> CreateDoctorAsync(DoctorForCreateDto doctorForCreate)
     {
-        var doctor = new Doctor
+        if (doctorForCreate is null)
         {
-            UserId = doctorForCreate.UserId,
-            DepartmentId = doctorForCreate.DepartmentId,
-            SupervisorId = doctorForCreate.SupervisorId,
-            Profile = new DoctorProfile
-            {
-                FirstName = doctorForCreate.Profile.FirstName,
-                LastName = doctorForCreate.Profile.LastName,
-                PhoneNumber = doctorForCreate.Profile.PhoneNumber,
-                Specialty = doctorForCreate.Profile.Specialty,
-                Qualification = doctorForCreate.Profile.Qualification,
-                LicenseNumber = doctorForCreate.Profile.LicenseNumber,
-                YearsOfExperience = doctorForCreate.Profile.YearsOfExperience,
-                ConsultationFee = doctorForCreate.Profile.ConsultationFee,
-            }
-        };
+            throw new ArgumentNullException(nameof(doctorForCreate));
+        }
+
+        await ValidateDoctor(doctorForCreate);
+
+        var doctor = MapToEntity(doctorForCreate);
 
         _dbContext.Doctors.Add(doctor);
         await _dbContext.SaveChangesAsync();
@@ -42,21 +33,13 @@ public class DoctorService : IDoctorService
         return doctor.Id;
     }
 
-    public async Task DeleteDoctorAsync(int doctorId)
-    {
-        var doctor = await _dbContext.Doctors.FindAsync(doctorId);
-
-        if (doctor == null)
-        {
-            throw new KeyNotFoundException("Doctor not found");
-        }
-
-        _dbContext.Doctors.Remove(doctor);
-        await _dbContext.SaveChangesAsync();
-    }
-
     public async Task<DoctorDto?> GetDoctorAsync(int doctorId)
     {
+        if (doctorId <= 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+            
         return await _dbContext.Doctors
             .Where(d => d.Id == doctorId)
             .Select(d => new DoctorDto
@@ -111,6 +94,11 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorProfileDto?> GetDoctorProfileAsync(int doctorId)
     {
+        if (doctorId <= 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
         return await _dbContext.Doctors
             .Where(d => d.Id == doctorId)
             .Select(d => new DoctorProfileDto
@@ -129,28 +117,28 @@ public class DoctorService : IDoctorService
 
     public async Task<IEnumerable<DoctorDto>> GetDoctorsAsync()
     {
-       return await _dbContext.Doctors
-            .Select(d => new DoctorDto
-            {
-                Id = d.Id,
-                UserId = d.UserId,
-                SupervisorId = d.SupervisorId,
-                DepartmentId = d.DepartmentId,
-                Profile = new DoctorProfileDto
-                {
-                    FirstName = d.Profile.FirstName,
-                    LastName = d.Profile.LastName,
-                    PhoneNumber = d.Profile.PhoneNumber,
-                    Specialty = d.Profile.Specialty,
-                    Qualification = d.Profile.Qualification,
-                    LicenseNumber = d.Profile.LicenseNumber,
-                    YearsOfExperience = d.Profile.YearsOfExperience,
-                    ConsultationFee = d.Profile.ConsultationFee,
-                },
-                SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
-                DepartmentName = d.Department.Name,
-            })
-            .ToListAsync();
+        return await _dbContext.Doctors
+             .Select(d => new DoctorDto
+             {
+                 Id = d.Id,
+                 UserId = d.UserId,
+                 SupervisorId = d.SupervisorId,
+                 DepartmentId = d.DepartmentId,
+                 Profile = new DoctorProfileDto
+                 {
+                     FirstName = d.Profile.FirstName,
+                     LastName = d.Profile.LastName,
+                     PhoneNumber = d.Profile.PhoneNumber,
+                     Specialty = d.Profile.Specialty,
+                     Qualification = d.Profile.Qualification,
+                     LicenseNumber = d.Profile.LicenseNumber,
+                     YearsOfExperience = d.Profile.YearsOfExperience,
+                     ConsultationFee = d.Profile.ConsultationFee,
+                 },
+                 SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
+                 DepartmentName = d.Department.Name,
+             })
+             .ToListAsync();
     }
 
     public async Task<IEnumerable<DoctorDto>> GetDoctorsByAppointmentStatus(AppointmentStatus status)
@@ -183,6 +171,11 @@ public class DoctorService : IDoctorService
 
     public async Task<IEnumerable<DoctorDto>> GetDoctorsByDepartmentAsync(int departmentId)
     {
+        if (departmentId <= 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
         return await _dbContext.Doctors
             .Where(d => d.DepartmentId == departmentId)
             .Select(d => new DoctorDto
@@ -215,38 +208,53 @@ public class DoctorService : IDoctorService
 
     public async Task<int> GetDoctorsCountInDepartmentAsync(int departmentId)
     {
+        if (departmentId <= 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
         return await _dbContext.Doctors.CountAsync(d => d.DepartmentId == departmentId);
     }
 
     public async Task<IEnumerable<DoctorDto>> GetSubordinatesAsync(int doctorId)
     {
-       return await _dbContext.Doctors
-            .Where(d => d.SupervisorId == doctorId)
-            .Select(d => new DoctorDto
-            {
-                Id = d.Id,
-                UserId = d.UserId,
-                SupervisorId = d.SupervisorId,
-                DepartmentId = d.DepartmentId,
-                Profile = new DoctorProfileDto
-                {
-                    FirstName = d.Profile.FirstName,
-                    LastName = d.Profile.LastName,
-                    PhoneNumber = d.Profile.PhoneNumber,
-                    Specialty = d.Profile.Specialty,
-                    Qualification = d.Profile.Qualification,
-                    LicenseNumber = d.Profile.LicenseNumber,
-                    YearsOfExperience = d.Profile.YearsOfExperience,
-                    ConsultationFee = d.Profile.ConsultationFee,
-                },
-                SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
-                DepartmentName = d.Department.Name,
-            })
-            .ToListAsync();
+        if (doctorId <= 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
+        return await _dbContext.Doctors
+             .Where(d => d.SupervisorId == doctorId)
+             .Select(d => new DoctorDto
+             {
+                 Id = d.Id,
+                 UserId = d.UserId,
+                 SupervisorId = d.SupervisorId,
+                 DepartmentId = d.DepartmentId,
+                 Profile = new DoctorProfileDto
+                 {
+                     FirstName = d.Profile.FirstName,
+                     LastName = d.Profile.LastName,
+                     PhoneNumber = d.Profile.PhoneNumber,
+                     Specialty = d.Profile.Specialty,
+                     Qualification = d.Profile.Qualification,
+                     LicenseNumber = d.Profile.LicenseNumber,
+                     YearsOfExperience = d.Profile.YearsOfExperience,
+                     ConsultationFee = d.Profile.ConsultationFee,
+                 },
+                 SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
+                 DepartmentName = d.Department.Name,
+             })
+             .ToListAsync();
     }
 
     public async Task<DoctorDto?> GetSupervisorAsync(int doctorId)
     {
+        if (doctorId <= 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
         var doctor = await _dbContext.Doctors
             .Include(d => d.Supervisor)
             .FirstOrDefaultAsync(d => d.Id == doctorId);
@@ -255,7 +263,7 @@ public class DoctorService : IDoctorService
         {
             return null;
         }
-            
+
         var supervisor = doctor.Supervisor;
 
         return new DoctorDto
@@ -282,7 +290,19 @@ public class DoctorService : IDoctorService
 
     public async Task UpdateDoctorProfileAsync(int doctorId, DoctorForUpdateDto doctorForUpdate)
     {
-        var doctor = await _dbContext.Doctors.FindAsync(doctorForUpdate.Id);
+        if (doctorId <= 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
+        if (doctorForUpdate.Id != doctorId)
+        {
+            throw new ArgumentException("Mismatch between route doctorId and payload Id.");
+        }
+
+        var doctor = await _dbContext.Doctors
+                .Include(d => d.Profile)
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
 
         if (doctor == null)
         {
@@ -301,5 +321,64 @@ public class DoctorService : IDoctorService
         doctor.Profile.ConsultationFee = doctorForUpdate.Profile.ConsultationFee;
 
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteDoctorAsync(int doctorId)
+    {
+        if (doctorId <= 0)
+        {
+            throw new ArgumentException("Id must be greater than 0");
+        }
+
+        var doctor = await _dbContext.Doctors.FindAsync(doctorId);
+
+        if (doctor == null)
+        {
+            throw new KeyNotFoundException("Doctor not found");
+        }
+
+        _dbContext.Doctors.Remove(doctor);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    private async Task ValidateDoctor(DoctorForCreateDto doctorForCreate)
+    {
+        bool licenseExists = await _dbContext.Doctors
+               .AsNoTracking()
+               .AnyAsync(d => d.Profile.LicenseNumber == doctorForCreate.Profile.LicenseNumber);
+
+        if (licenseExists)
+        {
+            throw new InvalidOperationException("Doctor with this license already exists");
+        }
+
+        bool departmentExists = await _dbContext.Departments
+                .AnyAsync(d => d.Id == doctorForCreate.DepartmentId);
+
+        if (!departmentExists)
+        {
+            throw new InvalidOperationException("Invalid department");
+        }
+    }
+
+    private Doctor MapToEntity(DoctorForCreateDto doctorForCreate)
+    {
+        return new Doctor
+        {
+            UserId = doctorForCreate.UserId,
+            DepartmentId = doctorForCreate.DepartmentId,
+            SupervisorId = doctorForCreate.SupervisorId,
+            Profile = new DoctorProfile
+            {
+                FirstName = doctorForCreate.Profile.FirstName,
+                LastName = doctorForCreate.Profile.LastName,
+                PhoneNumber = doctorForCreate.Profile.PhoneNumber,
+                Specialty = doctorForCreate.Profile.Specialty,
+                Qualification = doctorForCreate.Profile.Qualification,
+                LicenseNumber = doctorForCreate.Profile.LicenseNumber,
+                YearsOfExperience = doctorForCreate.Profile.YearsOfExperience,
+                ConsultationFee = doctorForCreate.Profile.ConsultationFee,
+            }
+        };
     }
 }

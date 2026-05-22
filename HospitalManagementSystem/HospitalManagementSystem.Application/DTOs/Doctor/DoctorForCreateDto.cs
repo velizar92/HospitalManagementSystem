@@ -10,5 +10,5 @@ public class DoctorForCreateDto
     public int DepartmentId { get; set; }
     public int? SupervisorId { get; set; }
     [Required]
-    public DoctorProfileDto Profile { get; set; } = new DoctorProfileDto();
+    public DoctorProfileDto Profile { get; set; };
 }
