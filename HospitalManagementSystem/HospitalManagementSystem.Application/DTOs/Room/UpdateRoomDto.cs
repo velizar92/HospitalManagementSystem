@@ -8,7 +8,7 @@ public class UpdateRoomDto
     public int Id { get; set; }
 
     public string? RoomNumber { get; set; }
-    public int? Capacity { get; set; }
-    public string? Purpose { get; set; }
-    public bool? IsActive { get; set; }
+    public int Capacity { get; set; }
+    public string Purpose { get; set; }
+    public bool IsActive { get; set; }
 }
