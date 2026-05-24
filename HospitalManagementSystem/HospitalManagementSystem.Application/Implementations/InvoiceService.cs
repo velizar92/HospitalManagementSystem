@@ -13,8 +13,8 @@ public class InvoiceService : IInvoiceService
     public InvoiceService(HospitalManagementSystemDbContext dbContext)
     {
         _dbContext = dbContext;
-
     }
+
     public async Task<int> CreateInvoiceAsync(CreateInvoiceDto createInvoiceDto)
     {
         var invoice = new Invoice
