@@ -138,7 +138,7 @@ public class MedicalRecordService : IMedicalRecordService
     {
         if (doctorId <= 0)
         {
-            throw new ArgumentException("Doctor record ID must be greater than zero.", nameof(medicalRecordId));
+            throw new ArgumentException("Doctor ID must be greater than zero.", nameof(doctorId));
         }
 
         return await _dbContext.MedicalRecords
@@ -165,7 +165,7 @@ public class MedicalRecordService : IMedicalRecordService
     {
         if (patientId <= 0)
         {
-            throw new ArgumentException("Doctor record ID must be greater than zero.", nameof(medicalRecordId));
+            throw new ArgumentException("Patient ID must be greater than zero.", nameof(patientId));
         }
 
         return await _dbContext.MedicalRecords
