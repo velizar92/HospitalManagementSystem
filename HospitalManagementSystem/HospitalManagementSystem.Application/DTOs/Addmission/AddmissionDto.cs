@@ -10,5 +10,5 @@ public class AddmissionDto
     public string Reason { get; set; } = string.Empty;
     public string? PatientFullName { get; set; }
     public string? RoomNumber { get; set; }
-    public bool IsActive => DischargeDate == null;
+    public bool IsActive { get; set; }
 }

@@ -11,4 +11,5 @@ public class UpdateAddmissionDto
     public DateTime? AdmissionDate { get; set; }
     public DateTime? DischargeDate { get; set; }
     public string? Reason { get; set; }
+    public bool IsActive { get; set; }
 }

@@ -12,6 +12,7 @@ public class CreateAddmissionDto
 
     [Required]
     public DateTime AdmissionDate { get; set; }
+    public DateTime DischargeDate { get; set; }
 
     public string Reason { get; set; } = string.Empty;
 }
