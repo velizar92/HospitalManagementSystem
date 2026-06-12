@@ -110,6 +110,11 @@ public class AddmissionService : IAddmissionService
 
     public async Task UpdateAdmissionAsync(UpdateAddmissionDto updateAdmissionDto)
     {
+        if (updateAdmissionDto == null)
+        {
+            throw new ArgumentNullException(nameof(updateAdmissionDto));
+        }
+
         var admission = await _dbContext.Admissions.FindAsync(updateAdmissionDto.Id);
 
         if (admission == null)
@@ -119,9 +124,9 @@ public class AddmissionService : IAddmissionService
 
         admission.Id = updateAdmissionDto.Id;
         admission.IsActive = updateAdmissionDto.IsActive;
-        admission.Reason = updateAdmissionDto.Reason ?? admission.Reason;
-        admission.AdmissionDate = updateAdmissionDto.AdmissionDate ?? admission.AdmissionDate;
-        admission.DischargeDate = updateAdmissionDto.DischargeDate ?? admission.DischargeDate;
+        admission.Reason = updateAdmissionDto.Reason;
+        admission.AdmissionDate = updateAdmissionDto.AdmissionDate;
+        admission.DischargeDate = updateAdmissionDto.DischargeDate;
 
         await _dbContext.SaveChangesAsync();
     }
