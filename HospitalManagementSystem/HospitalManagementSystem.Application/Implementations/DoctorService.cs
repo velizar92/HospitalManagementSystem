@@ -133,6 +133,23 @@ public class DoctorService : IDoctorService
                     a.DoctorId == d.Id &&
                     a.Status == query.AppointmentStatus.Value));
         }
+     
+        doctorsQuery = query.OrderBy?.ToLower() switch
+        {
+            "name" => query.Desc
+                ? doctorsQuery.OrderByDescending(d => d.Profile.LastName)
+                : doctorsQuery.OrderBy(d => d.Profile.LastName),
+
+            "experience" => query.Desc
+                ? doctorsQuery.OrderByDescending(d => d.Profile.YearsOfExperience)
+                : doctorsQuery.OrderBy(d => d.Profile.YearsOfExperience),
+
+            "fee" => query.Desc
+                ? doctorsQuery.OrderByDescending(d => d.Profile.ConsultationFee)
+                : doctorsQuery.OrderBy(d => d.Profile.ConsultationFee),
+
+            _ => doctorsQuery.OrderBy(d => d.Id)
+        };
 
         return await doctorsQuery
             .Select(d => new DoctorDto
