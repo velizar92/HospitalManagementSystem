@@ -151,7 +151,11 @@ public class DoctorService : IDoctorService
             _ => doctorsQuery.OrderBy(d => d.Id)
         };
 
-        return await doctorsQuery
+        var pagedDoctors = doctorsQuery
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize);
+
+        return await pagedDoctors
             .Select(d => new DoctorDto
             {
                 Id = d.Id,
