@@ -1,4 +1,5 @@
 ﻿using HospitalManagementSystem.Application.DTOs.Doctor;
+using HospitalManagementSystem.Application.Queries;
 using HospitalManagementSystem.Domain.Enums;
 
 namespace HospitalManagementSystem.Application.Interfaces;
@@ -8,7 +9,7 @@ public interface IDoctorService
     Task<DoctorDto?> GetDoctorAsync(int doctorId);
     Task<DoctorDto?> GetDoctorByUserIdAsync(string userId);
     Task<int> GetDoctorsCountAsync();
-    Task<IEnumerable<DoctorDto>> GetDoctorsAsync();
+    Task<IEnumerable<DoctorDto>> GetDoctorsAsync(DoctorQuery query);
     Task<IEnumerable<DoctorDto>> GetDoctorsByDepartmentAsync(int departmentId);
     Task<int> GetDoctorsCountInDepartmentAsync(int departmentId);
     Task<int> CreateDoctorAsync(DoctorForCreateDto doctorForCreate);

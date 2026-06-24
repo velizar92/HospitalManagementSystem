@@ -19,20 +19,8 @@ public class DoctorsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] DoctorQuery query)
     {
-        if (query.DepartmentId.HasValue)
-        {
-            var doctors = await _doctorService.GetDoctorsByDepartmentAsync(query.DepartmentId.Value);
-            return Ok(doctors);
-        }
-
-        if (query.AppointmentStatus.HasValue)
-        {
-            var doctors = await _doctorService.GetDoctorsByAppointmentStatus(query.AppointmentStatus.Value);
-            return Ok(doctors);
-        }
-
-        var allDoctors = await _doctorService.GetDoctorsAsync();
-        return Ok(allDoctors);
+        var doctors = await _doctorService.GetDoctorsAsync(query);
+        return Ok(doctors);
     }
 
     [HttpGet("{id}")]

@@ -1,5 +1,6 @@
 ﻿using HospitalManagementSystem.Application.DTOs.Doctor;
 using HospitalManagementSystem.Application.Interfaces;
+using HospitalManagementSystem.Application.Queries;
 using HospitalManagementSystem.Domain.Enums;
 using HospitalManagementSystem.Domain.Models;
 using HospitalManagementSystem.Infrastructure.Data;
@@ -115,30 +116,48 @@ public class DoctorService : IDoctorService
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<DoctorDto>> GetDoctorsAsync()
+    public async Task<IEnumerable<DoctorDto>> GetDoctorsAsync(DoctorQuery query)
     {
-        return await _dbContext.Doctors
-             .Select(d => new DoctorDto
-             {
-                 Id = d.Id,
-                 UserId = d.UserId,
-                 SupervisorId = d.SupervisorId,
-                 DepartmentId = d.DepartmentId,
-                 Profile = new DoctorProfileDto
-                 {
-                     FirstName = d.Profile.FirstName,
-                     LastName = d.Profile.LastName,
-                     PhoneNumber = d.Profile.PhoneNumber,
-                     Specialty = d.Profile.Specialty,
-                     Qualification = d.Profile.Qualification,
-                     LicenseNumber = d.Profile.LicenseNumber,
-                     YearsOfExperience = d.Profile.YearsOfExperience,
-                     ConsultationFee = d.Profile.ConsultationFee,
-                 },
-                 SupervisorFullName = d.Supervisor != null ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}" : null,
-                 DepartmentName = d.Department.Name,
-             })
-             .ToListAsync();
+        var doctorsQuery = _dbContext.Doctors.AsQueryable();
+  
+        if (query.DepartmentId.HasValue)
+        {
+            doctorsQuery = doctorsQuery
+                .Where(d => d.DepartmentId == query.DepartmentId.Value);
+        }
+     
+        if (query.AppointmentStatus.HasValue)
+        {
+            doctorsQuery = doctorsQuery.Where(d =>
+                _dbContext.Appointments.Any(a =>
+                    a.DoctorId == d.Id &&
+                    a.Status == query.AppointmentStatus.Value));
+        }
+
+        return await doctorsQuery
+            .Select(d => new DoctorDto
+            {
+                Id = d.Id,
+                UserId = d.UserId,
+                SupervisorId = d.SupervisorId,
+                DepartmentId = d.DepartmentId,
+                Profile = new DoctorProfileDto
+                {
+                    FirstName = d.Profile.FirstName,
+                    LastName = d.Profile.LastName,
+                    PhoneNumber = d.Profile.PhoneNumber,
+                    Specialty = d.Profile.Specialty,
+                    Qualification = d.Profile.Qualification,
+                    LicenseNumber = d.Profile.LicenseNumber,
+                    YearsOfExperience = d.Profile.YearsOfExperience,
+                    ConsultationFee = d.Profile.ConsultationFee,
+                },
+                SupervisorFullName = d.Supervisor != null
+                    ? $"{d.Supervisor.Profile.FirstName} {d.Supervisor.Profile.LastName}"
+                    : null,
+                DepartmentName = d.Department.Name,
+            })
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<DoctorDto>> GetDoctorsByAppointmentStatus(AppointmentStatus status)
