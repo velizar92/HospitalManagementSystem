@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace HospitalManagementSystem.WebApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/v1/[controller]")]
 public class DoctorsController : ControllerBase
 {
     private readonly IDoctorService _doctorService;
